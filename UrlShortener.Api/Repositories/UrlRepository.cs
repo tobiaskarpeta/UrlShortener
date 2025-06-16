@@ -2,13 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using UrlShortener.Api.Data;
 using UrlShortener.Api.Models;
 
-public class UrlRepository : IUrlRepository
+public class UrlRepository : RepositoryBase, IUrlRepository
 {
-    private readonly UrlShortenerDbContext _context;
-
-    public UrlRepository(UrlShortenerDbContext context)
+    public UrlRepository(UrlShortenerDbContext context) : base(context)
     {
-        _context = context;
     }
 
     public Task AddAsync(ShortenedUrl shortenedUrl, CancellationToken cancellationToken)

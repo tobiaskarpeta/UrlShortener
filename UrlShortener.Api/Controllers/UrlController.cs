@@ -16,8 +16,13 @@ namespace UrlShortener.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ShortenUrl([FromBody] ShortenUrlRequest request)
+        public async Task<IActionResult> ShortenUrl([FromBody] CreateShortenUrlRequest request)
         {
+            if(ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
                 var result = await _mediator.Send(new ShortenUrlCommand
@@ -31,6 +36,32 @@ namespace UrlShortener.Api.Controllers
             catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch
+            {
+                return StatusCode(500, ErrorMessages.InternalServerError);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateShortenedUrl(string id, [FromBody] UpdateShortenedUrlRequest request)
+        {
+            if(ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _mediator.Send(new UpdateShortenedUrlCommand
+                {
+                    UniqueId = id,
+                    OriginalUrl = request.OriginalUrl,
+                    ShortCode = request.ShortCode,
+                    ExpiresAt = request.ExpiresAt
+                });
+
+                return result != null ? Ok(result) : NotFound();
             }
             catch
             {

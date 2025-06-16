@@ -15,7 +15,7 @@ namespace UrlShortener.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> ShortenUrl([FromBody] CreateShortenUrlRequest request)
         {
             if(ModelState.IsValid == false)
@@ -43,7 +43,21 @@ namespace UrlShortener.Api.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpGet("info/{id}")]
+        public async Task<IActionResult> GetShortenedUrl(string id)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetShortenedUrlQuery(id));
+                return result != null ? Ok(result) : NotFound();
+            }
+            catch
+            {
+                return StatusCode(500, ErrorMessages.InternalServerError);
+            }
+        }
+
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateShortenedUrl(string id, [FromBody] UpdateShortenedUrlRequest request)
         {
             if(ModelState.IsValid == false)
@@ -69,7 +83,7 @@ namespace UrlShortener.Api.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteShortenedUrl(string id)
         {
             try

@@ -17,9 +17,20 @@ public class UrlRepository : IUrlRepository
         return _context.SaveChangesAsync(cancellationToken);
     }
 
+    public Task<int> DeleteAsync(ShortenedUrl shortenedUrl, CancellationToken cancellationToken)
+    {
+        _context.ShortenedUrls.Remove(shortenedUrl);
+        return _context.SaveChangesAsync(cancellationToken);
+    }
+
     public Task<ShortenedUrl?> GetByShortCode(string shortCode, CancellationToken cancellationToken)
     {
         return _context.ShortenedUrls.FirstOrDefaultAsync(url => url.ShortCode == shortCode);
+    }
+
+    public Task<ShortenedUrl?> GetByUniqueId(string uniqueId, CancellationToken cancellationToken)
+    {
+        return _context.ShortenedUrls.FirstOrDefaultAsync(url => url.UniqueId.ToString() == uniqueId, cancellationToken);
     }
 
     public Task<bool> ShortCodeExistsAsync(string shortCode, CancellationToken cancellationToken)

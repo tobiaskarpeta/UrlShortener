@@ -1,13 +1,11 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Api.Features.Urls.Commands;
-using UrlShortener.Api.Features.Urls.Queries;
 
 namespace UrlShortener.Api.Controllers
 {
     [ApiController]
-    [Route("/shorten")]
+    [Route("api/shorten")]
     public class UrlController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -22,11 +20,6 @@ namespace UrlShortener.Api.Controllers
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(request.Url))
-                {
-                    return BadRequest("URL address to shorten cannot be empty.");
-                }
-
                 var result = await _mediator.Send(new ShortenUrlCommand
                 {
                     Url = request.Url,
@@ -39,25 +32,24 @@ namespace UrlShortener.Api.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch
+            {
+                return StatusCode(500, ErrorMessages.InternalServerError);
+            }
         }
 
-        [HttpGet("{code}")]
-        public async Task<IActionResult> RedirectUrl(string code)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteShortenedUrl(string id)
         {
-            if(string.IsNullOrWhiteSpace(code))
+            try
             {
-                return BadRequest("Short code cannot be empty.");
+                var result = await _mediator.Send(new DeleteShortenedUrlCommand(id));
+                return result ? NoContent() : NotFound();
             }
-
-            var query = new GetUrlByCodeQuery { ShortCode = code };
-            var originalUrl = await _mediator.Send(query);
-
-            if (originalUrl == null)
+            catch
             {
-                return NotFound("No URL is associated with this code.");
+                return StatusCode(500, ErrorMessages.InternalServerError);
             }
-
-            return Redirect(originalUrl);
         }
     }
 }

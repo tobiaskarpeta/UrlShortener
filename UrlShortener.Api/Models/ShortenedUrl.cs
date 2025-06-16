@@ -2,11 +2,12 @@ using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace UrlShortener.Api.Models
-{
-    public class ShortenedUrl
+{    public class ShortenedUrl
     {
         [Key]
         public int Id { get; set; }
+        
+        public Guid UniqueId { get; set; } = Guid.NewGuid();
         
         [Required]
         [MaxLength(2000)]

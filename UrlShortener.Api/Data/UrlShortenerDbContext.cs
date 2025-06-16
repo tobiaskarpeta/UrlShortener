@@ -16,12 +16,11 @@ namespace UrlShortener.Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure indexes and constraints
             modelBuilder.Entity<ShortenedUrl>()
                 .HasIndex(u => u.ShortCode)
                 .IsUnique();
                 
-            modelBuilder.Entity<ShortenedUrl>()
+                modelBuilder.Entity<ShortenedUrl>()
                 .Property(u => u.CreatedAt)
                 .HasDefaultValueSql("GETDATE()");
                 

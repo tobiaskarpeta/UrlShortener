@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Api", "UrlShortener.Api\UrlShortener.Api.csproj", "{D24B7AFA-F6FF-499D-9DE9-A625E1542E12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener", "UrlShortener\UrlShortener.csproj", "{FBDD254C-CEEB-466E-93EA-19866CA77D9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{D24B7AFA-F6FF-499D-9DE9-A625E1542E12}.Release|x64.Build.0 = Release|Any CPU
 		{D24B7AFA-F6FF-499D-9DE9-A625E1542E12}.Release|x86.ActiveCfg = Release|Any CPU
 		{D24B7AFA-F6FF-499D-9DE9-A625E1542E12}.Release|x86.Build.0 = Release|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Debug|x64.Build.0 = Debug|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Debug|x86.Build.0 = Debug|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Release|x64.ActiveCfg = Release|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Release|x64.Build.0 = Release|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Release|x86.ActiveCfg = Release|Any CPU
+		{FBDD254C-CEEB-466E-93EA-19866CA77D9E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

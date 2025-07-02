@@ -1,12 +1,13 @@
-using MediatR;
+using UrlShortener.Api.Constants;
+using UrlShortener.Api.Mediator;
 using UrlShortener.Api.Models;
 
-public class GetShortenedUrlQuery : IRequest<ShortenedUrl?>
-{
-    public string UniqueId { get; private set; }
+namespace UrlShortener.Api.Features.Urls.Queries;
 
-    public GetShortenedUrlQuery(string uniqueId)
-    {
-        UniqueId = uniqueId;
-    }
+public class GetShortenedUrlQuery(string uniqueId) : ICacheableRequest<ShortenedUrl?>
+{
+    public string UniqueId { get; } = uniqueId;
+
+    public string CacheKey => $"{CachePrefixes.Url}:{UniqueId}";
+    public TimeSpan Expiration => CacheExpirationTimes.UrlRecord;
 }

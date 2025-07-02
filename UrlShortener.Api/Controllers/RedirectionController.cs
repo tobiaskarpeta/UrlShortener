@@ -2,6 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Api.Features.Urls.Queries;
 
+namespace UrlShortener.Api.Controllers;
+
 [ApiController]
 public class RedirectionController : ControllerBase
 {

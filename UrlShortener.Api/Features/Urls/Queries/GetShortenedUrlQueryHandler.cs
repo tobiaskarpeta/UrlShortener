@@ -1,6 +1,8 @@
 using MediatR;
 using UrlShortener.Api.Models;
 
+namespace UrlShortener.Api.Features.Urls.Queries;
+
 public class GetShortenedUrlQueryHandler : IRequestHandler<GetShortenedUrlQuery, ShortenedUrl?>
 {
     private readonly IUrlRepository _repository;

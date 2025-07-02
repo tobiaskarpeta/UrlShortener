@@ -1,14 +1,17 @@
 using MediatR;
+using UrlShortener.Api.Mediator.Notifications;
 
 namespace UrlShortener.Api.Features.Urls.Queries
 {
     public class GetUrlByCodeQueryHandler : IRequestHandler<GetUrlByCodeQuery, string?>
     {
         private readonly IUrlRepository _repository;
+        private readonly IMediator _mediator;
 
-        public GetUrlByCodeQueryHandler(IUrlRepository repository)
+        public GetUrlByCodeQueryHandler(IUrlRepository repository, IMediator mediator)
         {
             _repository = repository;
+            _mediator = mediator;
         }
 
         public async Task<string?> Handle(GetUrlByCodeQuery request, CancellationToken cancellationToken)
@@ -20,8 +23,10 @@ namespace UrlShortener.Api.Features.Urls.Queries
             }
 
             shortenedUrlRecord.AccessCount++;
+
             await _repository.SaveChangesAsync(cancellationToken);
-            
+            await _mediator.Publish(new RemoveCachedUrlRecordNotification(shortenedUrlRecord.UniqueId.ToString()), cancellationToken);
+
             return shortenedUrlRecord.OriginalUrl;
         }
     }

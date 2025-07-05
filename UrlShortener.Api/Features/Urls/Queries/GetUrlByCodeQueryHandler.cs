@@ -1,5 +1,6 @@
 using MediatR;
 using UrlShortener.Api.Mediator.Notifications;
+using UrlShortener.Api.Repositories;
 
 namespace UrlShortener.Api.Features.Urls.Queries
 {
@@ -22,6 +23,7 @@ namespace UrlShortener.Api.Features.Urls.Queries
                 return null;
             }
 
+            //TODO: Maybe it would be better to publish a notification here to update the record
             shortenedUrlRecord.AccessCount++;
 
             await _repository.SaveChangesAsync(cancellationToken);

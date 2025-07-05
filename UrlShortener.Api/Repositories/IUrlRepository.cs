@@ -1,5 +1,7 @@
 using UrlShortener.Api.Models;
 
+namespace UrlShortener.Api.Repositories;
+
 public interface IUrlRepository : IRepository
 {
     Task AddAsync(ShortenedUrl shortenedUrl, CancellationToken cancellationToken);

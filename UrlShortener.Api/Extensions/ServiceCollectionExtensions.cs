@@ -1,5 +1,6 @@
 using MediatR;
 using UrlShortener.Api.Mediator.Behaviors;
+using UrlShortener.Api.Repositories;
 
 namespace UrlShortener.Api.Extensions;
 public static class ServiceCollectionExtensions

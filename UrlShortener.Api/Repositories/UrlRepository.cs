@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using UrlShortener.Api.Data;
 using UrlShortener.Api.Models;
 
+namespace UrlShortener.Api.Repositories;
+
 public class UrlRepository : RepositoryBase, IUrlRepository
 {
     public UrlRepository(UrlShortenerDbContext context) : base(context)

@@ -1,5 +1,6 @@
 using MediatR;
 using UrlShortener.Api.Models;
+using UrlShortener.Api.Repositories;
 
 namespace UrlShortener.Api.Features.Urls.Queries;
 

@@ -3,14 +3,18 @@ using UrlShortener.Api.Models;
 
 namespace UrlShortener.Api.Data
 {
-    public class UrlShortenerDbContext : DbContext
+    public class UrlShortenerDbContext : DbContext, IUrlShortenerContext
     {
+        public UrlShortenerDbContext()
+        {
+        }
+
         public UrlShortenerDbContext(DbContextOptions<UrlShortenerDbContext> options)
             : base(options)
         {
         }
 
-        public DbSet<ShortenedUrl> ShortenedUrls { get; set; }
+        public virtual DbSet<ShortenedUrl> ShortenedUrls { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,14 +23,19 @@ namespace UrlShortener.Api.Data
             modelBuilder.Entity<ShortenedUrl>()
                 .HasIndex(u => u.ShortCode)
                 .IsUnique();
-                
-                modelBuilder.Entity<ShortenedUrl>()
+
+            modelBuilder.Entity<ShortenedUrl>()
                 .Property(u => u.CreatedAt)
                 .HasDefaultValueSql("GETDATE()");
-                
+
             modelBuilder.Entity<ShortenedUrl>()
                 .Property(u => u.AccessCount)
                 .HasDefaultValue(0);
         }
+    }
+
+    public interface IUrlShortenerContext
+    {
+        DbSet<ShortenedUrl> ShortenedUrls { get; set; }
     }
 }

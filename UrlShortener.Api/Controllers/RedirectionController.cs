@@ -17,7 +17,7 @@ public class RedirectionController : ControllerBase
     [HttpGet("{code}")]
     public async Task<IActionResult> RedirectUrl(string code)
     {
-        var query = new GetUrlByCodeQuery { ShortCode = code };
+        var query = new GetUrlByCodeQuery(code);
         var originalUrl = await _mediator.Send(query);
 
         if (string.IsNullOrWhiteSpace(originalUrl))

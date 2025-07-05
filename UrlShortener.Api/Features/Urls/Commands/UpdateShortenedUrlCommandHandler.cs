@@ -1,6 +1,7 @@
 using MediatR;
 using UrlShortener.Api.Mediator.Notifications;
 using UrlShortener.Api.Models;
+using UrlShortener.Api.Repositories;
 
 namespace UrlShortener.Api.Features.Urls.Commands;
 

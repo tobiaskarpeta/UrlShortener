@@ -24,14 +24,15 @@ public class UpdateShortenedUrlCommandHandler : IRequestHandler<UpdateShortenedU
             return null;
         }
 
+        //TODO: Validate the request data (e.g., check if the short code is unique, if the original URL is valid, etc.)
+        //TODO: Reset access count if originalUrl or shortCode is changed???
+        //TODO: Use AutoMapper for mapping
         existingUrl.OriginalUrl = request.OriginalUrl;
         existingUrl.ShortCode = request.ShortCode;
         existingUrl.ExpiresAt = request.ExpiresAt;
 
         await _repository.SaveChangesAsync(cancellationToken);
-
-        await _mediator.Publish(new RemoveCachedUrlRecordNotification(existingUrl.UniqueId.ToString()), cancellationToken);
-        await _mediator.Publish(new CacheUpdatedUrlRecordNotification(existingUrl), cancellationToken);
+        await _mediator.Publish(new UpdateCachedUrlRecordNotification(existingUrl), cancellationToken);
 
         return existingUrl;
     }

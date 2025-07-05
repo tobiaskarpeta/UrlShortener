@@ -23,12 +23,7 @@ namespace UrlShortener.Api.Features.Urls.Queries
                 return null;
             }
 
-            //TODO: Maybe it would be better to publish a notification here to update the record
-            shortenedUrlRecord.AccessCount++;
-
-            await _repository.SaveChangesAsync(cancellationToken);
-            await _mediator.Publish(new RemoveCachedUrlRecordNotification(shortenedUrlRecord.UniqueId.ToString()), cancellationToken);
-
+            await _mediator.Publish(new IncreaseUrlAccessCountNotification(shortenedUrlRecord), cancellationToken);
             return shortenedUrlRecord.OriginalUrl;
         }
     }

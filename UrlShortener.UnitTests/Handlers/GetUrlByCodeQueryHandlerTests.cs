@@ -53,7 +53,7 @@ public class GetUrlByCodeQueryHandlerTests : UnitTestsBase
         var result = await sut.Handle(request, CancellationToken.None);
 
         _repositoryMock.Verify(r => r.GetByShortCode(shortCode, It.IsAny<CancellationToken>()), Times.Once);
-        _mediatorMock.Verify(m => m.Publish(It.IsAny<RemoveCachedUrlRecordNotification>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mediatorMock.Verify(m => m.Publish(It.IsAny<IncreaseUrlAccessCountNotification>(), It.IsAny<CancellationToken>()), Times.Once);
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.EqualTo(expectedResult));

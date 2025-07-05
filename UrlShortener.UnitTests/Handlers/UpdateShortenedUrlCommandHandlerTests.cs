@@ -12,13 +12,10 @@ public class UpdateShortenedUrlCommandHandlerTests : UnitTestsBase
     private Mock<IUrlRepository> _repositoryMock;
     private Mock<IMediator> _mediatorMock;
 
-    private List<string> _notificationCallOrder;
 
     [SetUp]
     public void SetUp()
     {
-        _notificationCallOrder = new List<string>();
-
         _repositoryMock = new Mock<IUrlRepository>();
         _repositoryMock.Setup(r => r.GetByUniqueId(TestUniqueId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ShortenedUrl
@@ -31,13 +28,7 @@ public class UpdateShortenedUrlCommandHandlerTests : UnitTestsBase
 
 
         _mediatorMock = new Mock<IMediator>();
-
-        _mediatorMock.Setup(m => m.Publish(It.IsAny<RemoveCachedUrlRecordNotification>(), CancellationToken.None))
-        .Callback(() => _notificationCallOrder.Add("removed"));
-
-        _mediatorMock.Setup(m => m.Publish(It.IsAny<CacheUpdatedUrlRecordNotification>(), CancellationToken.None))
-            .Callback(() => _notificationCallOrder.Add("cached"));
-
+        _mediatorMock.Setup(m => m.Publish(It.IsAny<UpdateCachedUrlRecordNotification>(), CancellationToken.None));
     }
 
     [Test]
@@ -56,10 +47,7 @@ public class UpdateShortenedUrlCommandHandlerTests : UnitTestsBase
         _repositoryMock.Verify(r => r.GetByUniqueId(TestUniqueId, CancellationToken.None), Times.Once);
         _repositoryMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Once);
 
-        _mediatorMock.Verify(m => m.Publish(It.IsAny<RemoveCachedUrlRecordNotification>(), CancellationToken.None), Times.Once);
-        _mediatorMock.Verify(m => m.Publish(It.IsAny<CacheUpdatedUrlRecordNotification>(), CancellationToken.None), Times.Once);
-
-        Assert.That(_notificationCallOrder, Is.EqualTo(new List<string> { "removed", "cached" }));
+        _mediatorMock.Verify(m => m.Publish(It.IsAny<UpdateCachedUrlRecordNotification>(), CancellationToken.None), Times.Once);
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.InstanceOf<ShortenedUrl>());
@@ -90,8 +78,7 @@ public class UpdateShortenedUrlCommandHandlerTests : UnitTestsBase
         _repositoryMock.Verify(r => r.GetByUniqueId(request.UniqueId, It.IsAny<CancellationToken>()), Times.Once);
         _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
 
-        _mediatorMock.Verify(m => m.Publish(It.IsAny<RemoveCachedUrlRecordNotification>(), It.IsAny<CancellationToken>()), Times.Never);
-        _mediatorMock.Verify(m => m.Publish(It.IsAny<CacheUpdatedUrlRecordNotification>(), It.IsAny<CancellationToken>()), Times.Never);
+        _mediatorMock.Verify(m => m.Publish(It.IsAny<UpdateCachedUrlRecordNotification>(), It.IsAny<CancellationToken>()), Times.Never);
 
         Assert.That(result, Is.Null);
     }

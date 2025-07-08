@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using UrlShortener.Api.Mediator.Notifications;
 using UrlShortener.Api.Models;
@@ -9,11 +10,13 @@ public class UpdateShortenedUrlCommandHandler : IRequestHandler<UpdateShortenedU
 {
     private readonly IUrlRepository _repository;
     private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
 
-    public UpdateShortenedUrlCommandHandler(IUrlRepository repository, IMediator mediator)
+    public UpdateShortenedUrlCommandHandler(IUrlRepository repository, IMediator mediator, IMapper mapper)
     {
         _repository = repository;
         _mediator = mediator;
+        _mapper = mapper;
     }
 
     public async Task<ShortenedUrl?> Handle(UpdateShortenedUrlCommand request, CancellationToken cancellationToken)
@@ -24,12 +27,13 @@ public class UpdateShortenedUrlCommandHandler : IRequestHandler<UpdateShortenedU
             return null;
         }
 
-        //TODO: Validate the request data (e.g., check if the short code is unique, if the original URL is valid, etc.)
+        if (!string.Equals(request.ShortCode, existingUrl.ShortCode) && await _repository.ShortCodeExistsAsync(request.ShortCode, cancellationToken))
+        {
+            throw new InvalidOperationException("Selected custom code is taken. Choose different one.");
+        }
+
         //TODO: Reset access count if originalUrl or shortCode is changed???
-        //TODO: Use AutoMapper for mapping
-        existingUrl.OriginalUrl = request.OriginalUrl;
-        existingUrl.ShortCode = request.ShortCode;
-        existingUrl.ExpiresAt = request.ExpiresAt;
+        _mapper.Map(request, existingUrl);
 
         await _repository.SaveChangesAsync(cancellationToken);
         await _mediator.Publish(new UpdateCachedUrlRecordNotification(existingUrl), cancellationToken);

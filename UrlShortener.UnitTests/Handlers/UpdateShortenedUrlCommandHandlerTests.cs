@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using Moq;
 using UrlShortener.Api.Features.Urls.Commands;
 using UrlShortener.Api.Mediator.Notifications;
@@ -11,7 +12,7 @@ public class UpdateShortenedUrlCommandHandlerTests : UnitTestsBase
 {
     private Mock<IUrlRepository> _repositoryMock;
     private Mock<IMediator> _mediatorMock;
-
+    private Mock<IMapper> _mapperMock;
 
     [SetUp]
     public void SetUp()
@@ -26,9 +27,16 @@ public class UpdateShortenedUrlCommandHandlerTests : UnitTestsBase
                 ShortCode = TestShortCode
             });
 
-
         _mediatorMock = new Mock<IMediator>();
         _mediatorMock.Setup(m => m.Publish(It.IsAny<UpdateCachedUrlRecordNotification>(), CancellationToken.None));
+
+        _mapperMock = new Mock<IMapper>();
+        _mapperMock.Setup(m => m.Map(It.IsAny<UpdateShortenedUrlCommand>(), It.IsAny<ShortenedUrl>()))
+            .Callback<UpdateShortenedUrlCommand, ShortenedUrl>((src, dest) =>
+            {
+                dest.OriginalUrl = src.OriginalUrl;
+                dest.ShortCode = src.ShortCode;
+            });
     }
 
     [Test]
@@ -41,7 +49,7 @@ public class UpdateShortenedUrlCommandHandlerTests : UnitTestsBase
             ShortCode = TestShortCode2
         };
 
-        var sut = new UpdateShortenedUrlCommandHandler(_repositoryMock.Object, _mediatorMock.Object);
+        var sut = new UpdateShortenedUrlCommandHandler(_repositoryMock.Object, _mediatorMock.Object, _mapperMock.Object);
         var result = await sut.Handle(request, CancellationToken.None);
 
         _repositoryMock.Verify(r => r.GetByUniqueId(TestUniqueId, CancellationToken.None), Times.Once);
@@ -63,23 +71,25 @@ public class UpdateShortenedUrlCommandHandlerTests : UnitTestsBase
     }
 
     [Test]
-    public async Task Handles_NonExistingUniqueId_ReturnsNull()
+    public void Handles_NonExistingUniqueId_ReturnsNull()
     {
+        _repositoryMock.Setup(r => r.ShortCodeExistsAsync(TestShortCode2, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
         var request = new UpdateShortenedUrlCommand
         {
-            UniqueId = NonExistingUniqueId,
-            OriginalUrl = TestUrl2,
+            UniqueId = TestUniqueId,
+            OriginalUrl = TestUrl,
             ShortCode = TestShortCode2
         };
 
-        var sut = new UpdateShortenedUrlCommandHandler(_repositoryMock.Object, _mediatorMock.Object);
-        var result = await sut.Handle(request, CancellationToken.None);
+        var sut = new UpdateShortenedUrlCommandHandler(_repositoryMock.Object, _mediatorMock.Object, _mapperMock.Object);
+        var exception = Assert.ThrowsAsync<InvalidOperationException>(() => sut.Handle(request, CancellationToken.None));
+        Assert.That(exception.Message, Is.EqualTo("Selected custom code is taken. Choose different one."));
 
-        _repositoryMock.Verify(r => r.GetByUniqueId(request.UniqueId, It.IsAny<CancellationToken>()), Times.Once);
-        _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _repositoryMock.Verify(r => r.GetByUniqueId(TestUniqueId, CancellationToken.None), Times.Once);
+        _repositoryMock.Verify(r => r.SaveChangesAsync(CancellationToken.None), Times.Never);
 
-        _mediatorMock.Verify(m => m.Publish(It.IsAny<UpdateCachedUrlRecordNotification>(), It.IsAny<CancellationToken>()), Times.Never);
-
-        Assert.That(result, Is.Null);
+        _mediatorMock.Verify(m => m.Publish(It.IsAny<UpdateCachedUrlRecordNotification>(), CancellationToken.None), Times.Never);
     }
 }

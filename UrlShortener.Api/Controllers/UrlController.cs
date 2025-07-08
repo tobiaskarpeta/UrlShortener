@@ -78,6 +78,10 @@ namespace UrlShortener.Api.Controllers
 
                 return result != null ? Ok(result) : NotFound();
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch
             {
                 return StatusCode(500, ErrorMessages.InternalServerError);
